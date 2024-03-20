@@ -7,16 +7,18 @@ import (
 
 func dbUserToGqlCurrentUser(user database.User) model.CurrentUser {
 	return model.CurrentUser{
-		ID:        user.ID.String(),
-		Name:      user.Name,
-		CreatedAt: user.CreatedAt.String(),
-		UpdatedAt: user.UpdatedAt.String(),
-		APIKey:    user.ApiKey,
+		User: &model.User{
+			ID:        user.ID.String(),
+			Name:      user.Name,
+			CreatedAt: user.CreatedAt.String(),
+			UpdatedAt: user.UpdatedAt.String(),
+		},
+		APIKey: user.ApiKey,
 	}
 }
 
-func dbUserToGqlUser(user database.User) model.OtherUser {
-	return model.OtherUser{
+func dbUserToGqlUser(user database.User) model.User {
+	return model.User{
 		ID:        user.ID.String(),
 		Name:      user.Name,
 		CreatedAt: user.CreatedAt.String(),

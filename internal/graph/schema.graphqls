@@ -4,31 +4,21 @@
 
 scalar DateTime
 
-interface User {
+type User {
   id: ID!
   name: String!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
 
-type OtherUser implements User {
-  id: ID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-}
-
-type CurrentUser implements User {
-  id: ID!
-  name: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
+type CurrentUser {
+  user: User!
   apiKey: String!
 }
 
 type Query {
-  CurrentUser: CurrentUser!
-  Users: [OtherUser!]!
+  currentUser: CurrentUser!
+  users: [User!]!
 }
 
 type Mutation {
