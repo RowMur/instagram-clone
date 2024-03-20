@@ -31,6 +31,36 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.
 	return &user, nil
 }
 
+// Follow is the resolver for the follow field.
+func (r *mutationResolver) Follow(ctx context.Context, userID string) (*model.User, error) {
+	currentUser := auth.ForContext(ctx)
+	if currentUser == nil {
+		return nil, fmt.Errorf("access denied")
+	}
+
+	userToFollowGuid, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID")
+	}
+
+	_, err = r.DBQueries.CreateFollow(ctx, database.CreateFollowParams{
+		UserID:          currentUser.ID,
+		UserFollowingID: userToFollowGuid,
+		CreatedAt:       time.Now(),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	dbUser, err := r.DBQueries.GetUserById(ctx, userToFollowGuid)
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	user := dbUserToGqlUser(dbUser)
+	return &user, nil
+}
+
 // CurrentUser is the resolver for the CurrentUser field.
 func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, error) {
 	dbUser := auth.ForContext(ctx)
