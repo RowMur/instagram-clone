@@ -1,3 +1,7 @@
 insta-clone
 .env
 internal/database/
+
+# GraphQL
+internal/graph/generated.go
+internal/graph/model/
