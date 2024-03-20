@@ -4,7 +4,21 @@
 
 scalar DateTime
 
-type User {
+interface User {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type OtherUser implements User {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type CurrentUser implements User {
   id: ID!
   name: String!
   createdAt: DateTime!
@@ -13,9 +27,10 @@ type User {
 }
 
 type Query {
-  User: User!
+  CurrentUser: CurrentUser!
+  Users: [OtherUser!]!
 }
 
 type Mutation {
-  CreateUser(name: String!): User
+  CreateUser(name: String!): CurrentUser
 }

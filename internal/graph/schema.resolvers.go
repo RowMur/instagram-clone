@@ -16,9 +16,9 @@ import (
 )
 
 // CreateUser is the resolver for the CreateUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.User, error) {
+func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.CurrentUser, error) {
 	currentTime := time.Now()
-	dbUser, err := r.DBQueries.CreateUser(context.Background(), database.CreateUserParams{
+	dbUser, err := r.DBQueries.CreateUser(ctx, database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: currentTime,
 		Name:      name,
@@ -27,18 +27,34 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.
 		return nil, err
 	}
 
-	user := dbUserToGqlUser(dbUser)
+	user := dbUserToGqlCurrentUser(dbUser)
 	return &user, nil
 }
 
-// User is the resolver for the User field.
-func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
+// CurrentUser is the resolver for the CurrentUser field.
+func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, error) {
 	dbUser := auth.ForContext(ctx)
 	if dbUser == nil {
-		return &model.User{}, fmt.Errorf("access denied")
+		return nil, fmt.Errorf("access denied")
 	}
-	user := dbUserToGqlUser(*dbUser)
+	user := dbUserToGqlCurrentUser(*dbUser)
 	return &user, nil
+}
+
+// Users is the resolver for the Users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.OtherUser, error) {
+	dbUsers, err := r.DBQueries.GetUsers(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	users := []*model.OtherUser{}
+	for _, dbUser := range dbUsers {
+		user := dbUserToGqlUser(dbUser)
+		users = append(users, &user)
+	}
+
+	return users, nil
 }
 
 // Mutation returns MutationResolver implementation.
