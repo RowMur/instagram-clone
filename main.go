@@ -47,7 +47,9 @@ func main() {
 		w.Write([]byte(version))
 	})
 
-	gqlSrv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	gqlSrv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DBQueries: dbQueries,
+	}}))
 	router.Handle("/playground", playground.Handler("GraphQL Playground", "/query"))
 	router.Handle("/query", gqlSrv)
 

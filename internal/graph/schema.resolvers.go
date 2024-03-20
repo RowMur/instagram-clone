@@ -6,18 +6,43 @@ package graph
 
 import (
 	"context"
-	"fmt"
+	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph/model"
+	"time"
+
+	"github.com/google/uuid"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateUser is the resolver for the CreateUser field.
+func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.User, error) {
+	currentTime := time.Now()
+	dbUser, err := r.DBQueries.CreateUser(context.Background(), database.CreateUserParams{
+		ID:        uuid.New(),
+		CreatedAt: currentTime,
+		Name:      name,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	user := dbUserToGqlUser(dbUser)
+	return &user, nil
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// Users is the resolver for the Users field.
+func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
+	dbUsers, err := r.DBQueries.GetUsers(context.Background())
+	if err != nil {
+		return nil, err
+	}
+
+	users := []*model.User{}
+	for _, dbUser := range dbUsers {
+		user := dbUserToGqlUser(dbUser)
+		users = append(users, &user)
+	}
+
+	return users, nil
 }
 
 // Mutation returns MutationResolver implementation.
