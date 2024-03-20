@@ -2,6 +2,14 @@
 
 ## Development
 
+### GraphQL
+
+All GraphQL related code lives in `/internal/graph/`. To make changes, modify the schema file and then run the generate script.
+
+```bash
+go run github.com/99designs/gqlgen 
+```
+
 ### SQL
 
 #### Migrations
