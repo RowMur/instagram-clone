@@ -13,7 +13,7 @@ type User {
 }
 
 type Query {
-  Users: [User!]!
+  User: User!
 }
 
 type Mutation {

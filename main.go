@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"github/rowmur/insta-clone/internal/auth"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph"
 	"log"
@@ -42,6 +43,7 @@ func main() {
 		AllowedMethods: []string{"GET", "POST", "OPTIONS", "PUT", "DELETE"},
 		AllowedHeaders: []string{"*"},
 	}))
+	router.Use(auth.Middleware(dbQueries))
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(version))

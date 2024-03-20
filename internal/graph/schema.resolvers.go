@@ -6,6 +6,8 @@ package graph
 
 import (
 	"context"
+	"fmt"
+	"github/rowmur/insta-clone/internal/auth"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph/model"
 	"time"
@@ -29,20 +31,14 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.
 	return &user, nil
 }
 
-// Users is the resolver for the Users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	dbUsers, err := r.DBQueries.GetUsers(context.Background())
-	if err != nil {
-		return nil, err
+// User is the resolver for the User field.
+func (r *queryResolver) User(ctx context.Context) (*model.User, error) {
+	dbUser := auth.ForContext(ctx)
+	if dbUser == nil {
+		return &model.User{}, fmt.Errorf("access denied")
 	}
-
-	users := []*model.User{}
-	for _, dbUser := range dbUsers {
-		user := dbUserToGqlUser(dbUser)
-		users = append(users, &user)
-	}
-
-	return users, nil
+	user := dbUserToGqlUser(*dbUser)
+	return &user, nil
 }
 
 // Mutation returns MutationResolver implementation.
