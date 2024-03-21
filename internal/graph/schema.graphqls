@@ -26,4 +26,5 @@ type Query {
 type Mutation {
   createUser(name: String!): CurrentUser
   follow(userID: ID!): User
+  unfollow(userID: ID!): ID
 }

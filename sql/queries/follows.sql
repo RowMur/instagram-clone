@@ -8,3 +8,6 @@ SELECT * FROM follows WHERE user_id=$1;
 
 -- name: GetFollowersByUser :many
 SELECT * FROM follows WHERE user_following_id=$1;
+
+-- name: Unfollow :exec
+DELETE FROM follows WHERE user_id=$1 AND user_following_id=$2;

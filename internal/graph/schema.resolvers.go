@@ -61,6 +61,29 @@ func (r *mutationResolver) Follow(ctx context.Context, userID string) (*model.Us
 	return &user, nil
 }
 
+// Unfollow is the resolver for the unfollow field.
+func (r *mutationResolver) Unfollow(ctx context.Context, userID string) (*string, error) {
+	currentUser := auth.ForContext(ctx)
+	if currentUser == nil {
+		return nil, fmt.Errorf("access denied")
+	}
+
+	userToUnfollowGuid, err := uuid.Parse(userID)
+	if err != nil {
+		return nil, fmt.Errorf("invalid user ID")
+	}
+
+	err = r.DBQueries.Unfollow(ctx, database.UnfollowParams{
+		UserID:          currentUser.ID,
+		UserFollowingID: userToUnfollowGuid,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	return &userID, nil
+}
+
 // CurrentUser is the resolver for the CurrentUser field.
 func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, error) {
 	dbUser := auth.ForContext(ctx)
