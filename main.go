@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github/rowmur/insta-clone/internal/auth"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph"
@@ -55,5 +56,7 @@ func main() {
 	router.Handle("/playground", playground.Handler("GraphQL Playground", "/query"))
 	router.Handle("/query", gqlSrv)
 
-	http.ListenAndServe(":8080", router)
+	port := 8080
+	fmt.Printf("Serving on port :%v", port)
+	http.ListenAndServe(fmt.Sprintf(":%v", port), router)
 }

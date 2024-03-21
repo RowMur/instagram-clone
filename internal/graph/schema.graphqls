@@ -9,6 +9,8 @@ type User {
   name: String!
   createdAt: DateTime!
   updatedAt: DateTime!
+  following: [User!]!
+  followers: [User!]!
 }
 
 type CurrentUser {
