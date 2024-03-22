@@ -25,3 +25,14 @@ func dbUserToGqlUser(user database.User) model.User {
 		UpdatedAt: user.UpdatedAt.String(),
 	}
 }
+
+func dbPostToGqlPost(dbPost database.Post, dbUser database.User) model.Post {
+	user := dbUserToGqlUser(dbUser)
+	return model.Post{
+		ID:        dbPost.ID.String(),
+		CreatedAt: dbPost.CreatedAt.String(),
+		UpdatedAt: dbPost.UpdatedAt.String(),
+		User:      &user,
+		Text:      dbPost.PostText,
+	}
+}

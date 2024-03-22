@@ -23,6 +23,14 @@ type Follow {
   user: User!
 }
 
+type Post {
+  id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  user: User!
+  text: String!
+}
+
 type Query {
   currentUser: CurrentUser!
   users(ids: [ID!]): [User!]!
@@ -32,4 +40,5 @@ type Mutation {
   createUser(name: String!): CurrentUser
   follow(userID: ID!): User
   unfollow(userID: ID!): ID
+  createPost(text: String!): Post!
 }

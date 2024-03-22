@@ -84,6 +84,27 @@ func (r *mutationResolver) Unfollow(ctx context.Context, userID string) (*string
 	return &userID, nil
 }
 
+// CreatePost is the resolver for the createPost field.
+func (r *mutationResolver) CreatePost(ctx context.Context, text string) (*model.Post, error) {
+	currentUser := auth.ForContext(ctx)
+	if currentUser == nil {
+		return nil, fmt.Errorf("access denied")
+	}
+
+	dbPost, err := r.DBQueries.CreatePost(ctx, database.CreatePostParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UserID:    currentUser.ID,
+		PostText:  text,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	post := dbPostToGqlPost(dbPost, *currentUser)
+	return &post, nil
+}
+
 // CurrentUser is the resolver for the CurrentUser field.
 func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, error) {
 	dbUser := auth.ForContext(ctx)
