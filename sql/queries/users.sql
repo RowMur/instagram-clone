@@ -11,3 +11,6 @@ SELECT * FROM users;
 
 -- name: GetUserById :one
 SELECT * FROM users WHERE id=$1;
+
+-- name: GetUsersByIds :many
+SELECT * FROM users WHERE id=ANY($1::UUID[]);

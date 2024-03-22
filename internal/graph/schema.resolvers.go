@@ -95,8 +95,24 @@ func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, er
 }
 
 // Users is the resolver for the Users field.
-func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	dbUsers, err := r.DBQueries.GetUsers(ctx)
+func (r *queryResolver) Users(ctx context.Context, ids []string) ([]*model.User, error) {
+	var dbUsers []database.User
+	var err error
+
+	if ids == nil {
+		dbUsers, err = r.DBQueries.GetUsers(ctx)
+	} else {
+		userUUIDs := []uuid.UUID{}
+		for _, id := range ids {
+			userUUID, err := uuid.Parse(id)
+			if err != nil {
+				return nil, fmt.Errorf("invalid user ID")
+			}
+			userUUIDs = append(userUUIDs, userUUID)
+		}
+
+		dbUsers, err = r.DBQueries.GetUsersByIds(ctx, userUUIDs)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
 	}
