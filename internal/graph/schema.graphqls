@@ -34,6 +34,7 @@ type Post {
 type Query {
   currentUser: CurrentUser!
   users(ids: [ID!]): [User!]!
+  posts: [Post!]!
 }
 
 type Mutation {

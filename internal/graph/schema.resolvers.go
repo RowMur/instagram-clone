@@ -147,6 +147,42 @@ func (r *queryResolver) Users(ctx context.Context, ids []string) ([]*model.User,
 	return users, nil
 }
 
+// Posts is the resolver for the posts field.
+func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
+	currentUser := auth.ForContext(ctx)
+	if currentUser == nil {
+		return nil, fmt.Errorf("access denied")
+	}
+
+	followingFollows, err := r.DBQueries.GetFollowsByUser(ctx, currentUser.ID)
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	userIDsFollowing := []uuid.UUID{}
+	for _, followingFollow := range followingFollows {
+		userIDsFollowing = append(userIDsFollowing, followingFollow.UserFollowingID)
+	}
+
+	dbPosts, err := r.DBQueries.GetPostsFromUsers(ctx, userIDsFollowing)
+	if err != nil {
+		return nil, fmt.Errorf("something went wrong")
+	}
+
+	posts := []*model.Post{}
+	for _, dbPost := range dbPosts {
+		dbUser, err := r.DBQueries.GetUserById(ctx, dbPost.UserID)
+		if err != nil {
+			return nil, fmt.Errorf("something went wrong")
+		}
+
+		post := dbPostToGqlPost(dbPost, dbUser)
+		posts = append(posts, &post)
+	}
+
+	return posts, nil
+}
+
 // Following is the resolver for the following field.
 func (r *userResolver) Following(ctx context.Context, obj *model.User) ([]*model.Follow, error) {
 	return userFollows(r, ctx, obj, true)
