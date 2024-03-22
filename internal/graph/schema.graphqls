@@ -9,13 +9,18 @@ type User {
   name: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  following: [User!]!
-  followers: [User!]!
+  following: [Follow!]!
+  followers: [Follow!]!
 }
 
 type CurrentUser {
   user: User!
   apiKey: String!
+}
+
+type Follow {
+  createdAt: DateTime!
+  user: User!
 }
 
 type Query {
