@@ -2,6 +2,10 @@
 #
 # https://gqlgen.com/getting-started/
 
+directive @goField(
+  forceResolver: Boolean
+) on INPUT_FIELD_DEFINITION | FIELD_DEFINITION
+
 scalar DateTime
 
 type User {
@@ -9,8 +13,8 @@ type User {
   name: String!
   createdAt: DateTime!
   updatedAt: DateTime!
-  following: [Follow!]!
-  followers: [Follow!]!
+  following: [Follow!]! @goField(forceResolver: true)
+  followers: [Follow!]! @goField(forceResolver: true)
 }
 
 type CurrentUser {
