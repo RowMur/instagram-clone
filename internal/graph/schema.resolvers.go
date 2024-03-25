@@ -148,17 +148,7 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 		return nil, fmt.Errorf("access denied")
 	}
 
-	followingFollows, err := r.DBQueries.GetFollowsByUser(ctx, currentUser.ID)
-	if err != nil {
-		return nil, fmt.Errorf("something went wrong")
-	}
-
-	userIDsFollowing := []uuid.UUID{}
-	for _, followingFollow := range followingFollows {
-		userIDsFollowing = append(userIDsFollowing, followingFollow.UserFollowingID)
-	}
-
-	dbPosts, err := r.DBQueries.GetPostsFromUsers(ctx, userIDsFollowing)
+	dbPosts, err := r.DBQueries.GetPostsForUser(ctx, currentUser.ID)
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
 	}
