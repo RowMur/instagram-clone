@@ -9,8 +9,5 @@ SELECT * FROM users WHERE api_key=$1;
 -- name: GetUsers :many
 SELECT * FROM users;
 
--- name: GetUserById :one
-SELECT * FROM users WHERE id=$1;
-
 -- name: GetUsersByIds :many
 SELECT * FROM users WHERE id=ANY($1::UUID[]);
