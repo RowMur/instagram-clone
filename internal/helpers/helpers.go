@@ -39,14 +39,15 @@ func DBUsersToGqlUsers(dbUsers []database.User) []*model.User {
 	return users
 }
 
-func DBPostToGqlPost(dbPost database.Post, dbUser database.User) model.Post {
-	user := DBUserToGqlUser(dbUser)
+func DBPostToGqlPost(dbPost database.Post) model.Post {
 	return model.Post{
 		ID:        dbPost.ID.String(),
 		CreatedAt: dbPost.CreatedAt.String(),
 		UpdatedAt: dbPost.UpdatedAt.String(),
-		User:      &user,
-		Text:      dbPost.PostText,
+		User: &model.User{
+			ID: dbPost.UserID.String(),
+		},
+		Text: dbPost.PostText,
 	}
 }
 

@@ -54,13 +54,12 @@ func (r *mutationResolver) Follow(ctx context.Context, userID string) (*model.Us
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	dbUser, err := r.DBQueries.GetUserById(ctx, userToFollowGuid)
+	user, err := loaders.GetUser(ctx, userToFollowGuid.String())
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	user := helpers.DBUserToGqlUser(dbUser)
-	return &user, nil
+	return user, nil
 }
 
 // Unfollow is the resolver for the unfollow field.
@@ -103,8 +102,13 @@ func (r *mutationResolver) CreatePost(ctx context.Context, text string) (*model.
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	post := helpers.DBPostToGqlPost(dbPost, *currentUser)
+	post := helpers.DBPostToGqlPost(dbPost)
 	return &post, nil
+}
+
+// User is the resolver for the user field.
+func (r *postResolver) User(ctx context.Context, obj *model.Post) (*model.User, error) {
+	return loaders.GetUser(ctx, obj.User.ID)
 }
 
 // CurrentUser is the resolver for the CurrentUser field.
@@ -161,12 +165,7 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 
 	posts := []*model.Post{}
 	for _, dbPost := range dbPosts {
-		dbUser, err := r.DBQueries.GetUserById(ctx, dbPost.UserID)
-		if err != nil {
-			return nil, fmt.Errorf("something went wrong")
-		}
-
-		post := helpers.DBPostToGqlPost(dbPost, dbUser)
+		post := helpers.DBPostToGqlPost(dbPost)
 		posts = append(posts, &post)
 	}
 
@@ -186,6 +185,9 @@ func (r *userResolver) Followers(ctx context.Context, obj *model.User) ([]*model
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Post returns PostResolver implementation.
+func (r *Resolver) Post() PostResolver { return &postResolver{r} }
+
 // Query returns QueryResolver implementation.
 func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
@@ -193,5 +195,6 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 func (r *Resolver) User() UserResolver { return &userResolver{r} }
 
 type mutationResolver struct{ *Resolver }
+type postResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
