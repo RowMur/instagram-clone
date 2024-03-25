@@ -10,6 +10,8 @@ import (
 	"github/rowmur/insta-clone/internal/auth"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph/model"
+	"github/rowmur/insta-clone/internal/helpers"
+	"github/rowmur/insta-clone/internal/loaders"
 	"time"
 
 	"github.com/google/uuid"
@@ -27,7 +29,7 @@ func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.
 		return nil, err
 	}
 
-	user := dbUserToGqlCurrentUser(dbUser)
+	user := helpers.DBUserToGqlCurrentUser(dbUser)
 	return &user, nil
 }
 
@@ -57,7 +59,7 @@ func (r *mutationResolver) Follow(ctx context.Context, userID string) (*model.Us
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	user := dbUserToGqlUser(dbUser)
+	user := helpers.DBUserToGqlUser(dbUser)
 	return &user, nil
 }
 
@@ -101,7 +103,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, text string) (*model.
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	post := dbPostToGqlPost(dbPost, *currentUser)
+	post := helpers.DBPostToGqlPost(dbPost, *currentUser)
 	return &post, nil
 }
 
@@ -111,39 +113,27 @@ func (r *queryResolver) CurrentUser(ctx context.Context) (*model.CurrentUser, er
 	if dbUser == nil {
 		return nil, fmt.Errorf("access denied")
 	}
-	user := dbUserToGqlCurrentUser(*dbUser)
+	user := helpers.DBUserToGqlCurrentUser(*dbUser)
 	return &user, nil
 }
 
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context, ids []string) ([]*model.User, error) {
-	var dbUsers []database.User
-	var err error
-
-	if ids == nil {
-		dbUsers, err = r.DBQueries.GetUsers(ctx)
-	} else {
-		userUUIDs := []uuid.UUID{}
-		for _, id := range ids {
-			userUUID, err := uuid.Parse(id)
-			if err != nil {
-				return nil, fmt.Errorf("invalid user ID")
-			}
-			userUUIDs = append(userUUIDs, userUUID)
+	if ids != nil {
+		users, err := loaders.GetUsers(ctx, ids)
+		if err != nil {
+			return nil, fmt.Errorf("something went wrong")
 		}
 
-		dbUsers, err = r.DBQueries.GetUsersByIds(ctx, userUUIDs)
+		return users, nil
 	}
+
+	dbUsers, err := r.DBQueries.GetUsers(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
 	}
 
-	users := []*model.User{}
-	for _, dbUser := range dbUsers {
-		user := dbUserToGqlUser(dbUser)
-		users = append(users, &user)
-	}
-
+	users := helpers.DBUsersToGqlUsers(dbUsers)
 	return users, nil
 }
 
@@ -176,7 +166,7 @@ func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 			return nil, fmt.Errorf("something went wrong")
 		}
 
-		post := dbPostToGqlPost(dbPost, dbUser)
+		post := helpers.DBPostToGqlPost(dbPost, dbUser)
 		posts = append(posts, &post)
 	}
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph/model"
+	"github/rowmur/insta-clone/internal/helpers"
 
 	"github.com/google/uuid"
 )
@@ -37,7 +38,7 @@ func userFollows(r *userResolver, ctx context.Context, obj *model.User, followin
 			return nil, fmt.Errorf("something went wrong")
 		}
 
-		user := dbUserToGqlUser(dbUser)
+		user := helpers.DBUserToGqlUser(dbUser)
 		follow := model.Follow{
 			CreatedAt: dbFollow.CreatedAt.String(),
 			User:      &user,

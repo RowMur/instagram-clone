@@ -7,6 +7,7 @@ import (
 	"github/rowmur/insta-clone/internal/auth"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph"
+	"github/rowmur/insta-clone/internal/loaders"
 	"log"
 	"net/http"
 	"os"
@@ -45,6 +46,7 @@ func main() {
 		AllowedHeaders: []string{"*"},
 	}))
 	router.Use(auth.Middleware(dbQueries))
+	router.Use(loaders.Middleware(dbQueries))
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(version))
