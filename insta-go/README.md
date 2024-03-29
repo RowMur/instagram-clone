@@ -1,4 +1,4 @@
-# Instagram Clone
+# insta-go
 
 ## Development
 
