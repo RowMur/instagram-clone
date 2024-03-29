@@ -1,0 +1,11 @@
+schema: ../insta-go/internal/graph/schema.graphqls
+documents: src/**/*
+extensions:
+  codegen:
+   ignoreNoDocuments: true
+   generates:
+    'gql/':
+     preset: 'client'
+     presetConfig:
+      fragmentMasking:
+       unmaskFunctionName: 'getFragmentData'
