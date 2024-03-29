@@ -172,6 +172,11 @@ func (r *userResolver) Followers(ctx context.Context, obj *model.User) ([]*model
 	return userFollows(r, ctx, obj, false)
 }
 
+// Posts is the resolver for the posts field.
+func (r *userResolver) Posts(ctx context.Context, obj *model.User) ([]*model.Post, error) {
+	return loaders.GetUserPosts(ctx, obj.ID)
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 

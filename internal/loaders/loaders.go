@@ -4,7 +4,6 @@ import (
 	"context"
 	"github/rowmur/insta-clone/internal/database"
 	"github/rowmur/insta-clone/internal/graph/model"
-	"github/rowmur/insta-clone/internal/helpers"
 	"net/http"
 	"time"
 
@@ -15,38 +14,17 @@ type ctxKey string
 
 const loadersKey = ctxKey("dataloaders")
 
-type userReader struct {
-	dbQueries *database.Queries
-}
-
-func (u *userReader) getUsers(ctx context.Context, userIDs []string) ([]*model.User, []error) {
-	userUUIDs, err := helpers.StringsToUUIDs(userIDs)
-	if err != nil {
-		return nil, []error{err}
-	}
-
-	dbUsers, err := u.dbQueries.GetUsersByIds(ctx, userUUIDs)
-	if err != nil {
-		return nil, []error{err}
-	}
-
-	users := make([]*model.User, 0, len(userIDs))
-	for _, dbUser := range dbUsers {
-		user := helpers.DBUserToGqlUser(dbUser)
-		users = append(users, &user)
-	}
-
-	return users, nil
-}
-
 type Loaders struct {
-	UserLoader *dataloadgen.Loader[string, *model.User]
+	UserLoader      *dataloadgen.Loader[string, *model.User]
+	UserPostsLoader *dataloadgen.Loader[string, []*model.Post]
 }
 
 func NewLoaders(dbQueries *database.Queries) *Loaders {
 	ur := &userReader{dbQueries: dbQueries}
+	upr := &userPostsReader{dbQueries: dbQueries}
 	return &Loaders{
-		UserLoader: dataloadgen.NewLoader(ur.getUsers, dataloadgen.WithWait(time.Millisecond)),
+		UserLoader:      dataloadgen.NewLoader(ur.getUsers, dataloadgen.WithWait(time.Millisecond)),
+		UserPostsLoader: dataloadgen.NewLoader(upr.getPostsByUserIDs, dataloadgen.WithWait(time.Millisecond)),
 	}
 }
 
@@ -62,14 +40,4 @@ func Middleware(dbQueries *database.Queries) func(http.Handler) http.Handler {
 
 func ForContext(ctx context.Context) *Loaders {
 	return ctx.Value(loadersKey).(*Loaders)
-}
-
-func GetUser(ctx context.Context, userID string) (*model.User, error) {
-	loaders := ForContext(ctx)
-	return loaders.UserLoader.Load(ctx, userID)
-}
-
-func GetUsers(ctx context.Context, userIDs []string) ([]*model.User, error) {
-	loaders := ForContext(ctx)
-	return loaders.UserLoader.LoadAll(ctx, userIDs)
 }

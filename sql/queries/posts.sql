@@ -10,3 +10,8 @@ WHERE user_id IN (
     WHERE follows.user_id = $1
 )
 ORDER BY created_at DESC;
+
+-- name: GetPostsFromUsers :many
+SELECT * FROM posts
+WHERE user_id=ANY($1::UUID[])
+ORDER BY created_at DESC;

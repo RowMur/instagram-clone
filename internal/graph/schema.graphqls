@@ -15,6 +15,7 @@ type User {
   updatedAt: DateTime!
   following: [Follow!]! @goField(forceResolver: true)
   followers: [Follow!]! @goField(forceResolver: true)
+  posts: [Post!]! @goField(forceResolver: true)
 }
 
 type CurrentUser {
