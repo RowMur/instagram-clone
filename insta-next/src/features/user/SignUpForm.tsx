@@ -47,8 +47,13 @@ const SignUpForm = () => {
       >
         <form.Field
           name="name"
+          validators={{
+            onChange: ({ value }) =>
+              value === "" ? "Name is a required field" : undefined,
+          }}
           children={(field) => (
             <>
+              Name:
               <input
                 type="text"
                 className="border-2 border-red-400"
@@ -57,6 +62,9 @@ const SignUpForm = () => {
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
               />
+              {field.state.meta.errors ? (
+                <em>{field.state.meta.errors}</em>
+              ) : null}
             </>
           )}
         />
