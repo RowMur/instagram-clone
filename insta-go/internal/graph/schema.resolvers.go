@@ -144,11 +144,15 @@ func (r *queryResolver) Users(ctx context.Context, ids []string) ([]*model.User,
 // Posts is the resolver for the posts field.
 func (r *queryResolver) Posts(ctx context.Context) ([]*model.Post, error) {
 	currentUser := auth.ForContext(ctx)
-	if currentUser == nil {
-		return nil, fmt.Errorf("access denied")
-	}
 
-	dbPosts, err := r.DBQueries.GetPostsForUser(ctx, currentUser.ID)
+	var dbPosts []database.Post
+	var err error
+
+	if currentUser == nil {
+		dbPosts, err = r.DBQueries.GetPosts(ctx)
+	} else {
+		dbPosts, err = r.DBQueries.GetPostsForUser(ctx, currentUser.ID)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
 	}

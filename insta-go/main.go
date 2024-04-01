@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"database/sql"
 	"fmt"
 	"github/rowmur/insta-clone/internal/auth"
@@ -34,11 +33,6 @@ func main() {
 
 	dbQueries := database.New(db)
 
-	version, err := dbQueries.GetVersion(context.Background())
-	if err != nil {
-		log.Fatalf("error querying database: %s", err.Error())
-	}
-
 	router := chi.NewRouter()
 	router.Use(cors.Handler(cors.Options{
 		AllowedOrigins: []string{"*"},
@@ -49,7 +43,7 @@ func main() {
 	router.Use(loaders.Middleware(dbQueries))
 
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(version))
+		w.Write([]byte("ok"))
 	})
 
 	gqlSrv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{

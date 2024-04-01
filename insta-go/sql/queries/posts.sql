@@ -15,3 +15,7 @@ ORDER BY created_at DESC;
 SELECT * FROM posts
 WHERE user_id=ANY($1::UUID[])
 ORDER BY created_at DESC;
+
+-- name: GetPosts :many
+SELECT * FROM posts
+ORDER BY created_at DESC;
