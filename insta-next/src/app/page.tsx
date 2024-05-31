@@ -1,10 +1,10 @@
 import TestComponent from "@/components/Component";
-import SignUpForm from "@/features/user/SignUpForm";
+import User from "@/features/user/User";
 
 export default function Home() {
   return (
     <>
-      <SignUpForm />
+      <User />
       <TestComponent />
     </>
   );

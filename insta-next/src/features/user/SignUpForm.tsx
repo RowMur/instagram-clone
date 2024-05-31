@@ -20,9 +20,16 @@ const SignUpForm = () => {
       request("http://localhost:8080/query", createNewUserDocument, {
         name: name,
       }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      document.cookie = `key=${data.createUser?.apiKey}`;
       queryClient.invalidateQueries({
         queryKey: ["users"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["currentUser"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["currentUserApiKey"],
       });
     },
   });
