@@ -1,10 +1,10 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { graphql } from "../../../gql";
 import request from "graphql-request";
 import { useForm } from "@tanstack/react-form";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const createNewUserDocument = graphql(`
   mutation CreateUser($name: String!) {
@@ -16,6 +16,7 @@ const createNewUserDocument = graphql(`
 
 const SignUpForm = () => {
   const router = useRouter();
+  const params = useSearchParams();
   const createUserMutation = useMutation({
     mutationFn: async ({ name }: { name: string }) =>
       request("http://localhost:8080/query", createNewUserDocument, {
@@ -23,7 +24,9 @@ const SignUpForm = () => {
       }),
     onSuccess: (data) => {
       document.cookie = `key=${data.createUser?.apiKey}`;
-      router.refresh();
+      const continueToUrl = params.get("continue-to") ?? window.location.origin;
+      const url = new URL(continueToUrl);
+      router.push(url.pathname);
     },
   });
 

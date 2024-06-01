@@ -17,10 +17,6 @@ const User = async () => {
   const cookieStore = cookies();
   const currentUser = cookieStore.get("key");
 
-  if (!currentUser) {
-    return <SignUpForm />;
-  }
-
   const user = await request(
     "http://localhost:8080/query",
     currentUserDocument,
