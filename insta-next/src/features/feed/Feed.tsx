@@ -1,21 +1,23 @@
-import { graphql } from "../../../gql";
-import request from "graphql-request";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import PostForm from "./PostForm";
+import { fetchFeed } from "./lib";
 import Post from "./Post";
 
-const feedDocument = graphql(`
-  query Feed {
-    posts {
-      id
-      ...Post
-    }
-  }
-`);
+type Props = {
+  currentUser?: string;
+};
 
-const Feed = async () => {
-  const feed = await request("http://localhost:8080/query", feedDocument);
+const Feed = (props: Props) => {
+  const { data } = useQuery({
+    queryKey: ["feed"],
+    queryFn: fetchFeed,
+  });
   return (
     <section className="my-10">
-      {feed.posts.map((post) => (
+      <PostForm currentUser={props.currentUser} />
+      {data?.posts.map((post) => (
         <Post key={post.id} post={post} />
       ))}
     </section>
