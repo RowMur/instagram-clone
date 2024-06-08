@@ -19,7 +19,7 @@ import (
 
 // CreateUser is the resolver for the CreateUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, name string) (*model.CurrentUser, error) {
-	currentTime := time.Now()
+	currentTime := time.Now().UTC()
 	dbUser, err := r.DBQueries.CreateUser(ctx, database.CreateUserParams{
 		ID:        uuid.New(),
 		CreatedAt: currentTime,
@@ -48,7 +48,7 @@ func (r *mutationResolver) Follow(ctx context.Context, userID string) (*model.Us
 	_, err = r.DBQueries.CreateFollow(ctx, database.CreateFollowParams{
 		UserID:          currentUser.ID,
 		UserFollowingID: userToFollowGuid,
-		CreatedAt:       time.Now(),
+		CreatedAt:       time.Now().UTC(),
 	})
 	if err != nil {
 		return nil, fmt.Errorf("something went wrong")
@@ -94,7 +94,7 @@ func (r *mutationResolver) CreatePost(ctx context.Context, text string) (*model.
 
 	dbPost, err := r.DBQueries.CreatePost(ctx, database.CreatePostParams{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().UTC(),
 		UserID:    currentUser.ID,
 		PostText:  text,
 	})
