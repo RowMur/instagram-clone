@@ -22,10 +22,15 @@ func (u *userReader) getUsers(ctx context.Context, userIDs []string) ([]*model.U
 		return nil, []error{err}
 	}
 
-	users := make([]*model.User, 0, len(userIDs))
+	userIdToUser := map[string]*model.User{}
 	for _, dbUser := range dbUsers {
 		user := helpers.DBUserToGqlUser(dbUser)
-		users = append(users, &user)
+		userIdToUser[user.ID] = &user
+	}
+
+	users := make([]*model.User, 0, len(userIDs))
+	for _, userID := range userIDs {
+		users = append(users, userIdToUser[userID])
 	}
 
 	return users, nil
