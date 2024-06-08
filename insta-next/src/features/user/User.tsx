@@ -1,4 +1,3 @@
-import SignUpForm from "./SignUpForm";
 import { cookies } from "next/headers";
 import { graphql } from "../../../gql";
 import request from "graphql-request";
