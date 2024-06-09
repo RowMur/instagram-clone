@@ -4,12 +4,11 @@ go 1.22.1
 
 require (
 	github.com/99designs/gqlgen v0.17.45
-	github.com/go-chi/chi v1.5.5
+	github.com/go-chi/chi/v5 v5.0.12
 	github.com/go-chi/cors v1.2.1
 	github.com/google/uuid v1.6.0
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
-	github.com/vektah/gqlparser/v2 v2.5.11
 	github.com/vikstrous/dataloadgen v0.0.6
 )
 
@@ -22,6 +21,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sosodev/duration v1.2.0 // indirect
 	github.com/urfave/cli/v2 v2.27.1 // indirect
+	github.com/vektah/gqlparser/v2 v2.5.11 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
 	go.opentelemetry.io/otel v1.11.1 // indirect
 	go.opentelemetry.io/otel/trace v1.11.1 // indirect

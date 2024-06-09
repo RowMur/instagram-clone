@@ -2,6 +2,16 @@
 
 ## Development
 
+### Running Locally with Docker
+
+Add a `.env` file containing a `DB_CONNECTION_STRING` variable. This should point to a PostgreSQL DB.
+
+```bash
+docker build -t insta-go .
+
+docker run -p 8080:8080 insta-go
+```
+
 ### GraphQL
 
 All GraphQL related code lives in `/internal/graph/`. To make changes, modify the schema file and then run the generate script.
