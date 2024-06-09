@@ -2,7 +2,7 @@
 
 ## Development
 
-### Running Locally with Docker
+### Running Locally with Docker
 
 Add a `.env` file containing a `DB_CONNECTION_STRING` variable. This should point to a PostgreSQL DB.
 
